@@ -8,15 +8,43 @@ const CallLogs = () => {
   const [logs, setLogs] = useState([]);
   const [loading, setLoading] = useState(false);
   const [selectedCall, setSelectedCall] = useState(null);
+  const [clients, setClients] = useState([]);
+  const [campaigns, setCampaigns] = useState([]);
+  const [selectedClient, setSelectedClient] = useState('');
+  const [selectedCampaign, setSelectedCampaign] = useState('');
+
+  useEffect(() => {
+    fetchMetadata();
+  }, []);
 
   useEffect(() => {
     fetchLogs();
-  }, []);
+  }, [selectedClient, selectedCampaign]);
+
+  const fetchMetadata = async () => {
+    try {
+      const headers = { 'Authorization': `Bearer ${localStorage.getItem('admin_token')}` };
+      const [resClients, resCampaigns] = await Promise.all([
+        fetch(`${API_BASE}/clients`, { headers }),
+        fetch(`${import.meta.env.VITE_API_BASE_URL}/campaigns`, { headers })
+      ]);
+      const clientsData = await resClients.json();
+      const campaignsData = await resCampaigns.json();
+      setClients(Array.isArray(clientsData) ? clientsData : []);
+      setCampaigns(Array.isArray(campaignsData) ? campaignsData : []);
+    } catch (e) {
+      console.error(e);
+    }
+  };
 
   const fetchLogs = async () => {
     setLoading(true);
     try {
-      const res = await fetch(`${API_BASE}/calls`, {
+      let url = `${API_BASE}/calls?`;
+      if (selectedClient) url += `client_id=${selectedClient}&`;
+      if (selectedCampaign) url += `campaign_id=${selectedCampaign}&`;
+      
+      const res = await fetch(url, {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('admin_token')}`
         }
@@ -61,6 +89,33 @@ const CallLogs = () => {
           {loading ? 'Syncing...' : 'Refresh Logs'}
         </button>
       </header>
+
+      <div style={{ display: 'flex', gap: '1rem', marginBottom: '2rem' }}>
+        <select 
+          className="glass-btn" 
+          style={{ padding: '12px 16px', minWidth: '220px', appearance: 'auto' }}
+          value={selectedClient} 
+          onChange={e => {
+            setSelectedClient(e.target.value);
+            setSelectedCampaign(''); // Reset campaign when client changes
+          }}
+        >
+          <option value="">Filter by Client (All)</option>
+          {clients.map(c => <option key={c.id || c._id} value={c.id || c._id}>{c.name}</option>)}
+        </select>
+        
+        <select 
+          className="glass-btn" 
+          style={{ padding: '12px 16px', minWidth: '220px', appearance: 'auto' }}
+          value={selectedCampaign} 
+          onChange={e => setSelectedCampaign(e.target.value)}
+        >
+          <option value="">Filter by Campaign (All)</option>
+          {campaigns
+            .filter(c => !selectedClient || c.client_id === selectedClient)
+            .map(c => <option key={c.id || c._id} value={c.id || c._id}>{c.name}</option>)}
+        </select>
+      </div>
 
       {!loading && logs.length === 0 ? (
         <div className="glass" style={{ padding: '5rem', textAlign: 'center', borderRadius: '24px' }}>

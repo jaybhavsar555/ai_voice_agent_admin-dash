@@ -20,7 +20,7 @@ const Clients = () => {
   const [formData, setFormData] = useState({
     name: '',
     industry: 'Loans',
-    voice: 'Sarah (Professional)',
+    voice: 'aura-asteria-en',
     quota: 500,
     timezone: 'EST',
     contact_name: '',
@@ -30,10 +30,11 @@ const Clients = () => {
   const handleEdit = (client) => {
     setEditingClient(client);
     setIsModalOpen(true);
+    setViewingDetails(null); // Close sidebar to prevent overlap with the edit form
     setFormData({
       name: client.name || '',
       industry: client.industry?.charAt(0).toUpperCase() + client.industry?.slice(1) || 'Loans',
-      voice: client.metadata?.voice || 'Sarah (Professional)',
+      voice: client.metadata?.voice || 'aura-asteria-en',
       quota: client.metadata?.quota || 500,
       timezone: client.metadata?.timezone || 'EST',
       contact_name: client.contact_name || '',
@@ -237,7 +238,7 @@ const Clients = () => {
     setFormData({
       name: '',
       industry: 'Loans',
-      voice: 'Sarah (Professional)',
+      voice: 'aura-asteria-en',
       quota: 500,
       timezone: 'EST',
       contact_name: '',
@@ -359,8 +360,11 @@ const Clients = () => {
               value={formData.voice}
               onChange={(val) => setFormData({ ...formData, voice: val })}
               options={[
-                { id: 'Sarah (Professional)', name: 'Sarah (Prof)', icon: '🎙️' },
-                { id: 'James (Casual)', name: 'James (Cas)', icon: '🗣️' }
+                { id: 'aura-asteria-en', name: 'Female (Asteria)', icon: '👩' },
+                { id: 'aura-luna-en', name: 'Female (Luna)', icon: '👩' },
+                { id: 'aura-stella-en', name: 'Female (Stella)', icon: '👩' },
+                { id: 'aura-orion-en', name: 'Male (Orion)', icon: '👨' },
+                { id: 'aura-perseus-en', name: 'Male (Perseus)', icon: '👨' }
               ]}
             />
 
@@ -502,7 +506,7 @@ const Clients = () => {
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                   <Volume2 size={20} color="var(--accent)" />
                   <div>
-                    <div style={{ fontWeight: 600 }}>{viewingDetails?.metadata?.voice || 'Sarah (Professional)'}</div>
+                    <div style={{ fontWeight: 600 }}>{viewingDetails?.metadata?.voice || 'aura-asteria-en'}</div>
                     <div style={{ fontSize: '0.75rem', opacity: 0.5 }}>Active Voice Model</div>
                   </div>
                 </div>

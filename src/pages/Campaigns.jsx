@@ -424,10 +424,18 @@ const Campaigns = () => {
           return viewMode === 'archived' ? status === 'archived' : status !== 'archived';
         }).map(camp => (
           <div key={camp.id || camp._id} className="glass" style={{ padding: '1.5rem', border: camp.status === 'Active' ? '1px solid var(--accent)' : '1px solid var(--border-color)' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1.5rem' }}>
-              <div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1.5rem', minWidth: 0 }}>
+              <div style={{ flex: 1, minWidth: 0, marginRight: '12px' }}>
                 <div style={{ fontSize: '0.7rem', opacity: 0.5, fontWeight: 700, marginBottom: '4px' }}>{(camp.client || 'GENERAL').toUpperCase()}</div>
-                <h3 style={{ fontSize: '1.2rem', fontWeight: 700 }}>{camp.name || 'Untitled Campaign'}</h3>
+                <h3 style={{ 
+                  fontSize: '1.2rem', 
+                  fontWeight: 700,
+                  whiteSpace: 'nowrap',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis'
+                }} title={camp.name || 'Untitled Campaign'}>
+                  {camp.name || 'Untitled Campaign'}
+                </h3>
               </div>
               <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
                 {viewMode === 'active' ? (
